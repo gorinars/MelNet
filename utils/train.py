@@ -120,22 +120,24 @@ def train(args, pt_dir, chkpt_path, trainloader, testloader, writer, logger, hp,
                         loader.set_description("Loss %.04f at step %d" % (loss_sum, step))
                     loss_sum = 0
 
+                if step % hp.train.checkpoint_interval == 0:
+                    save_path = os.path.join(pt_dir, '%s_%s_tier%d_%03d_%d.pt'
+                                             % (args.name, githash, args.tier, epoch, step))
+                    torch.save({
+                        'model': model.state_dict(),
+                        'optimizer': optimizer.state_dict(),
+                        'step': step,
+                        'epoch': epoch,
+                        'hp_str': hp_str,
+                        'githash': githash,
+                    }, save_path)
+                    logger.info("Saved checkpoint to: %s" % save_path)
+
                 loss = loss.item()
                 if loss > 1e8 or math.isnan(loss):
                     logger.error("Loss exploded to %.04f at step %d!" % (loss, step))
                     raise Exception("Loss exploded")
 
-            save_path = os.path.join(pt_dir, '%s_%s_tier%d_%03d.pt'
-            % (args.name, githash, args.tier, epoch))
-            torch.save({
-                'model': model.state_dict(),
-                'optimizer': optimizer.state_dict(),
-                'step': step,
-                'epoch': epoch,
-                'hp_str': hp_str,
-                'githash': githash,
-            }, save_path)
-            logger.info("Saved checkpoint to: %s" % save_path)
 
             validate(args, model, melgen, tierutil, testloader, criterion, writer, step)
 
