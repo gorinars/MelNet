@@ -53,9 +53,9 @@ class AudioOnlyDataset(Dataset):
         random.seed(123)
         random.shuffle(self.file_list)
         if train:
-            self.file_list = self.file_list[:int(0.95 * len(self.file_list))]
+            self.file_list = self.file_list[:int((1 - hp.data.test_proportion) * len(self.file_list))]
         else:
-            self.file_list = self.file_list[int(0.95 * len(self.file_list)):]
+            self.file_list = self.file_list[int((1 - hp.data.test_proportion) * len(self.file_list)):]
 
         self.wavlen = int(hp.audio.sr * hp.audio.duration)
         self.tier = self.args.tier
@@ -114,9 +114,9 @@ class AudioTextDataset(Dataset):
         random.seed(123)
         random.shuffle(self.dataset)
         if train:
-            self.dataset = self.dataset[:int(0.95 * len(self.dataset))]
+            self.dataset = self.dataset[:int((1 - hp.data.test_proportion) * len(self.dataset))]
         else:
-            self.dataset = self.dataset[int(0.95 * len(self.dataset)):]
+            self.dataset = self.dataset[int((1 - hp.data.test_proportion) * len(self.dataset)):]
 
         self.wavlen = int(hp.audio.sr * hp.audio.duration)
         self.tier = self.args.tier

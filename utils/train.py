@@ -138,8 +138,8 @@ def train(args, pt_dir, chkpt_path, trainloader, testloader, writer, logger, hp,
                     logger.error("Loss exploded to %.04f at step %d!" % (loss, step))
                     raise Exception("Loss exploded")
 
-
-            validate(args, model, melgen, tierutil, testloader, criterion, writer, step)
+                if step % hp.train.test_interval == 0:
+                    validate(args, model, melgen, tierutil, testloader, criterion, writer, step)
 
     except Exception as e:
         logger.info("Exiting due to exception: %s" % e)
